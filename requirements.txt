@@ -3,3 +3,4 @@ bottle
 redis
 lxml
 pandas
+dotenv
