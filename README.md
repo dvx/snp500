@@ -8,7 +8,7 @@ Who knows.
 I grab it from Wikipedia and cache it on redis. When the page revision changes, the cache is updated.
 
 ## what is `sane`?
-`sane` indicates wether or not we're getting 505 symbols back, as expected. Keep in mind that Wikipedia might not always be right, so *caveat emptor*.
+`sane` indicates whether or not we're getting 505 symbols back, as expected. Keep in mind that Wikipedia might not always be right, so *caveat emptor*.
 
 ## what's the URL?
 https://snp500.herokuapp.com/
