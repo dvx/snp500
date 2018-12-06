@@ -6,8 +6,6 @@ import pandas as pd
 import const
 
 r = redis.Redis(decode_responses=True).from_url(url=const.REDIS_URL)
-r.delete('cached_rev', 'cached_symbols')
-r.set('cached_rev', 0)
 
 @error(404)
 def error404(error):
@@ -18,14 +16,14 @@ def error404(error):
 def api():
     t = time.time()
     cache_hit = True
-    response.set_header('Content-Type', 'application/json')
     wiki_req = requests.get(const.WIKIPEDIA_API_REV.format(const.SNP500_COMPANIES_PAGE))
     rev_dict = wiki_req.json()['query']['pages']
     wiki_rev = rev_dict[next(iter(rev_dict))]['revisions'][0]['revid']
+    cached_rev = r.get('cached_rev')
     out = { }
     try:
         # do we have a cache miss?
-        if wiki_rev != int(r.get('cached_rev')):
+        if cached_rev is not None and wiki_rev != int(cached_rev):
             cache_hit = False
             wiki_req = requests.get(const.WIKIPEDIA_API_PARSE.format(const.SNP500_COMPANIES_PAGE))
             wiki_html = wiki_req.json()['parse']['text']['*']
@@ -44,6 +42,7 @@ def api():
         out['t'] = time.time() - t
     except Exception as e:
         print(e, file=sys.stderr)
+    response.set_header('Content-Type', 'application/json')
     return out
 
 run(host='0.0.0.0', port=int(const.PORT))
